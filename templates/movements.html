@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Product Movements</h3>
+<div class="row">
+  <div class="col-md-5">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Product</label>
+        <select class="form-select" name="product_id" required>
+          <option value="">-- select --</option>
+          {% for p in products %}<option value="{{ p.product_id }}">{{ p.product_id }} - {{ p.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">From (leave blank if new stock)</label>
+        <select class="form-select" name="from_location">
+          <option value="">-- none --</option>
+          {% for l in locations %}<option value="{{ l.location_id }}">{{ l.location_id }} - {{ l.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">To (leave blank if removing stock)</label>
+        <select class="form-select" name="to_location">
+          <option value="">-- none --</option>
+          {% for l in locations %}<option value="{{ l.location_id }}">{{ l.location_id }} - {{ l.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Quantity</label>
+        <input class="form-control" type="number" name="qty" min="1" required>
+      </div>
+      <button class="btn btn-primary">Record Movement</button>
+    </form>
+  </div>
+  <div class="col-md-7">
+    <h5>Recent Movements</h5>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Time</th><th>Product</th><th>From</th><th>To</th><th>Qty</th></tr></thead>
+      <tbody>
+        {% for m in movements %}
+        <tr>
+          <td>{{ m.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ m.product_id }}</td>
+          <td>{{ m.from_location or '-' }}</td>
+          <td>{{ m.to_location or '-' }}</td>
+          <td>{{ m.qty }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

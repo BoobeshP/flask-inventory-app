@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Locations</h3>
+<div class="row">
+  <div class="col-md-5">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Location ID</label>
+        <input class="form-control" name="location_id" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input class="form-control" name="name" required>
+      </div>
+      <button class="btn btn-primary">Add Location</button>
+    </form>
+  </div>
+  <div class="col-md-7">
+    <h5>Existing</h5>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>ID</th><th>Name</th></tr></thead>
+      <tbody>
+        {% for l in locations %}
+        <tr><td>{{ l.location_id }}</td><td>{{ l.name }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Products</h3>
+<div class="row">
+  <div class="col-md-5">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Product ID</label>
+        <input class="form-control" name="product_id" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input class="form-control" name="name" required>
+      </div>
+      <button class="btn btn-primary">Add Product</button>
+    </form>
+  </div>
+  <div class="col-md-7">
+    <h5>Existing</h5>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>ID</th><th>Name</th></tr></thead>
+      <tbody>
+        {% for p in products %}
+        <tr><td>{{ p.product_id }}</td><td>{{ p.name }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
