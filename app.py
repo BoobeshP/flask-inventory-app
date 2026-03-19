@@ -162,6 +162,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'initdb':
         with app.app_context():
             db.create_all()
-            print('Created database inventory.db in current folder.')
+            print('Created a database inventory.db in current folder.')
         sys.exit(0)
     app.run(host='0.0.0.0', port=5000, debug=True)
