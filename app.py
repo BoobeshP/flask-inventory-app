@@ -147,10 +147,10 @@ def seed():
     # sample movements
     from random import randint
     movements = [
-        ProductMovement(product_id='P1', to_location='L1', qty=50),
-        ProductMovement(product_id='P2', to_location='L1', qty=30),
+        ProductMovement(product_id='P1', to_location='L1', qty=45),
+        ProductMovement(product_id='P2', to_location='L1', qty=25),
         ProductMovement(product_id='P1', from_location='L1', to_location='L2', qty=10),
-        ProductMovement(product_id='P3', to_location='L3', qty=20),
+        ProductMovement(product_id='P3', to_location='L3', qty=15),
     ]
     db.session.add_all(movements)
     db.session.commit()
