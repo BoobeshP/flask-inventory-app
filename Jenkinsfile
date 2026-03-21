@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'JDK11'
-        maven 'Maven3'
-        python 'Python3'
-    }
-
     environment {
         VENV_DIR = 'venv'
     }
@@ -15,73 +9,51 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo/mixed-project.git'
+                checkout scm
             }
         }
 
-        // ---------------- JAVA STAGES ----------------
-        stage('Java - Build') {
+        stage('Verify Environment') {
+            steps {
+                sh '''
+                echo "Java Version:"
+                java -version || true
+
+                echo "Maven Version:"
+                mvn -version || true
+
+                echo "Python Version:"
+                python3 --version || python --version || true
+                '''
+            }
+        }
+
+        // ---------------- JAVA BUILD ----------------
+        stage('Java - Build & Test') {
             when {
                 expression { fileExists('pom.xml') }
             }
             steps {
-                sh 'mvn clean compile'
+                sh '''
+                mvn clean test package
+                '''
             }
         }
 
-        stage('Java - Test') {
-            when {
-                expression { fileExists('pom.xml') }
-            }
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Java - Package') {
-            when {
-                expression { fileExists('pom.xml') }
-            }
-            steps {
-                sh 'mvn package'
-            }
-        }
-
-        // ---------------- PYTHON STAGES ----------------
-        stage('Python - Setup') {
+        // ---------------- PYTHON BUILD ----------------
+        stage('Python - Setup & Test') {
             when {
                 expression { fileExists('requirements.txt') }
             }
             steps {
                 sh '''
-                python -m venv $VENV_DIR
-                . $VENV_DIR/bin/activate
+                python3 -m venv ${VENV_DIR} || python -m venv ${VENV_DIR}
+                . ${VENV_DIR}/bin/activate
+
                 pip install --upgrade pip
                 pip install -r requirements.txt
-                '''
-            }
-        }
 
-        stage('Python - Test') {
-            when {
-                expression { fileExists('requirements.txt') }
-            }
-            steps {
-                sh '''
-                . $VENV_DIR/bin/activate
                 pytest || true
-                '''
-            }
-        }
-
-        stage('Python - Package') {
-            when {
-                expression { fileExists('setup.py') }
-            }
-            steps {
-                sh '''
-                . $VENV_DIR/bin/activate
-                python setup.py sdist
                 '''
             }
         }
@@ -89,21 +61,17 @@ pipeline {
         // ---------------- ARCHIVE ----------------
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: '''
-                    target/*.jar,
-                    dist/**,
-                    **/*.log
-                ''', fingerprint: true
+                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
             }
         }
     }
 
     post {
         success {
-            echo '✅ Java & Python Pipeline Successful'
+            echo '✅ Java + Python build successful on Linux'
         }
         failure {
-            echo '❌ Pipeline Failed'
+            echo '❌ Build failed – check Console Output'
         }
         always {
             cleanWs()
